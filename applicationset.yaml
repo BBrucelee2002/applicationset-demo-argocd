@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: guestbook-envs
+  namespace: argocd
+spec:
+  generators:
+    - list:
+        elements:
+          - env: dev
+            namespace: dev
+          - env: staging
+            namespace: staging
+          - env: prod
+            namespace: prod
+  template:
+    metadata:
+      name: guestbook-{{env}}
+    spec:
+      project: default
+      source:
+        repoURL: https://github.com/BBrucelee2002/applicationset-demo-argocd.git
+        path: guestbook/{{env}}
+        targetRevision: HEAD
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: {{namespace}}
